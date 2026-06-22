@@ -1,0 +1,40 @@
+# ==========================================
+# GLYPH CHAIN - Global Git Ignore Policy
+# ==========================================
+
+# --- Critical Security Vaults ---
+# Never leak private keys, credentials, or administrative logs
+*.key
+*.pem
+*.pfx
+*.pkcs12
+PRIVATE/
+network/certificates/private/
+
+# --- Database & State Exclusions ---
+# Ignore local SQLite databases and block state binaries
+*.db
+*.sqlite
+*.sqlite3
+backend/db/*.db
+
+# --- Go Backend Environment ---
+# Ignore compiled binaries, dependencies, and local tooling
+backend/bin/
+backend/vendor/
+backend/developer-notes/
+go.sum
+
+# --- React Frontend Environment ---
+# Ignore node modules and local production builds
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+.eslintcache
+
+# --- IDE & Operating System Trash ---
+# Ignore local workspace settings and system artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
