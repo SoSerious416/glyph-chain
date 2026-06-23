@@ -1,0 +1,71 @@
+===============================================================
+               CONVENTIONAL COMMITS SHEET
+===============================================================
+A lightweight specification for adding human and machine-readable 
+meaning to commit messages.
+
+Official Specification: https://www.conventionalcommits.org/
+
+-----------------------------------------------------------------------
+STRUCTURE OF A COMMIT MESSAGE
+-----------------------------------------------------------------------
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+
+* type:        The intent of the commit (e.g., feat, fix, docs).
+* scope:       (Optional) The codebase section enclosed in parentheses.
+* description: A concise description of the changes (present tense).
+
+-----------------------------------------------------------------------
+PRIMARY TYPES
+-----------------------------------------------------------------------
+feat     : A new feature is introduced to the codebase
+           Example: feat(crypto): add public key validation endpoint
+
+fix      : A bug fix is applied to the codebase
+           Example: fix(socket): resolve memory leak on connection close
+
+docs     : Documentation changes only (README, wiki, markdown files)
+           Example: docs: update deployment steps in repository guide
+
+style    : Code changes that do not affect logic or meaning 
+           (white-space, formatting, missing semi-colons, linting)
+           Example: style: reformat Makefile alignment
+
+refactor : Code changes that neither fix a bug nor add a feature
+           Example: refactor: optimize block structure buffer parsing
+
+test     : Adding missing tests or correcting existing tests
+           Example: test: add unit tests for SHA-256 ledger hashing
+
+chore    : Updating build tasks, configuration, or administrative scripts
+           Example: chore: update go module dependencies in go.mod
+
+-----------------------------------------------------------------------
+BREAKING CHANGES
+-----------------------------------------------------------------------
+Indicates a breaking change in the API/software functionality. 
+Can be flagged by placing an exclamation mark (!) right after the 
+type/scope, or adding a footer block starting with "BREAKING CHANGE:".
+
+Example (with !):
+  feat(ledger)!: switch state database from LevelDB to CouchDB
+
+Example (with footer):
+  refactor: overhaul certificate validation engine
+  
+  BREAKING CHANGE: The older TLS v1.1 validation blocks are dropped.
+
+-----------------------------------------------------------------------
+BENEFITS
+-----------------------------------------------------------------------
+1. Automated changelog generation.
+2. Automated semver (Semantic Versioning) bumps based on types:
+   - fix     -> PATCH version change
+   - feat    -> MINOR version change
+   - BREAKING CHANGE -> MAJOR version change
+3. Easier contribution onboarding and clean repository history log.
+=======================================================================
