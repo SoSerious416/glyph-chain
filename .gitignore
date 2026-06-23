@@ -18,6 +18,13 @@ network/certificates/private/
 *.sqlite3
 backend/db/*.db
 
+# Block OpenSSL state and tracking databases
+**/index.txt*
+**/serial*
+**/*.pem
+**/index.txt*
+**/serial*
+
 # --- Go Backend Environment ---
 # Ignore compiled binaries, dependencies, and local tooling
 backend/bin/
