@@ -1,0 +1,117 @@
+---
+Organizations:
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: ./components/orderer0/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+
+  - &GlyphOrg
+    Name: GlyphOrg
+    ID: GlyphOrgMSP
+    MSPDir: ./components/peer0/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('GlyphOrgMSP.admin', 'GlyphOrgMSP.peer', 'GlyphOrgMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('GlyphOrgMSP.admin', 'GlyphOrgMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('GlyphOrgMSP.admin')"
+    AnchorPeers:
+      - Host: peer0.glyphchain.local
+        Port: 7051
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_5: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  Addresses:
+    - orderer0.glyphchain.local:7050
+  EtcdRaft:
+    Consenters:
+      - Host: orderer0.glyphchain.local
+        Port: 7050
+        ClientTLSCert: ./components/orderer0/msp/signcerts/orderer0.crt
+        ServerTLSCert: ./components/orderer0/msp/signcerts/orderer0.crt
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+Profiles:
+  TwoOrgsChannel:
+    Consortium: SampleConsortium
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+      Capabilities: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *GlyphOrg
+      Capabilities: *ApplicationCapabilities

@@ -6,6 +6,7 @@
 # Never leak private keys, credentials, or administrative logs
 *.key
 *.pem
+*_sk
 *.pfx
 *.pkcs12
 PRIVATE/

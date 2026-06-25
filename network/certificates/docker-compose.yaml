@@ -1,0 +1,71 @@
+networks:
+  glyph_network:
+    name: glyph_network
+
+services:
+  orderer0.glyphchain.local:
+    image: hyperledger/fabric-orderer:2.4
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/fabric/msp
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+      - ORDERER_GENERAL_BOOTSTRAPFILE=
+      # TLS Configurations
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/fabric/tls/orderer0.key.pem
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/fabric/tls/orderer0.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric/tls/intermediate-chain.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/etc/hyperledger/fabric/tls/orderer0.key.pem
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/etc/hyperledger/fabric/tls/orderer0.crt
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/etc/hyperledger/fabric/tls/intermediate-chain.crt]
+      # Channel Configuration
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+      # Root-relative local paths mapped to absolute container internal paths
+      - ./components/orderer0/msp:/etc/hyperledger/fabric/msp
+      - ./components/orderer0/msp/signcerts/orderer0.crt:/etc/hyperledger/fabric/tls/orderer0.crt
+      - ./components/orderer0/msp/keystore/b2b324d37fa0cd948145e354e3cd86e66668e29f_sk:/etc/hyperledger/fabric/tls/orderer0.key.pem
+      - ./components/orderer0/msp/cacerts/intermediate-chain.crt:/etc/hyperledger/fabric/tls/intermediate-chain.crt
+      - ./components/orderer0/genesis.block:/etc/hyperledger/fabric/genesisblock
+    ports:
+      - 7050:7050
+    networks:
+      - glyph_network
+
+  peer0.glyphchain.local:
+    image: hyperledger/fabric-peer:2.4
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=glyph_network
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=true
+      # Node Identity
+      - CORE_PEER_ID=peer0.glyphchain.local
+      - CORE_PEER_ADDRESS=peer0.glyphchain.local:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.glyphchain.local:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_LOCALMSPID=GlyphOrgMSP
+      # TLS Paths inside container
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/peer0.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/peer0.key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/intermediate-chain.crt
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+      - /var/run/:/host/var/run/
+      # Root-relative local paths mapped to absolute container internal paths
+      - ./components/peer0/msp:/etc/hyperledger/fabric/msp
+      - ./components/peer0/msp/signcerts/peer0.crt:/etc/hyperledger/fabric/tls/peer0.crt
+      - ./components/peer0/msp/keystore/0286f7287fdd5219eaeef3e2859cdb35677cf351_sk:/etc/hyperledger/fabric/tls/peer0.key.pem
+      - ./components/peer0/msp/cacerts/intermediate-chain.crt:/etc/hyperledger/fabric/tls/intermediate-chain.crt
+    ports:
+      - 7051:7051
+    networks:
+      - glyph_network

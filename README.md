@@ -50,7 +50,15 @@ sudo apt install -y openssl
 Install Go cleanly via Snap to ensure all environment paths align correctly for backend tasks and chaincode execution:
 
 ```bash
-sudo snap install go --classic
+cd ~
+wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
+
+# 1. Extract it cleanly to /usr/local
+sudo tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
+rm go1.22.0.linux-amd64.tar.gz
+
+# 2. Open up your bashrc profile to double-check paths are locked in
+nano ~/.bashrc
 
 ```
 
@@ -68,8 +76,7 @@ sudo snap install protobuf --classic
 Required to compile, watch, and run your React development server:
 
 ```bash
-curl -fsSL [https://deb.nodesource.com/setup_20.x](https://deb.nodesource.com/setup_20.x) | sudo -E bash -
-sudo apt-get install -y nodejs
+sudo snap install node --classic --channel=20/stable
 
 ```
 
@@ -110,8 +117,9 @@ cd glyph-chain
 Configure your local shell paths so your system can locate global Go binaries and compiled gRPC plugins. Run these commands or append them to your `~/.bashrc`:
 
 ```bash
+export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin:/snap/bin
+export PATH=$GOPATH/bin:$GOPATH/bin:$PATH
 source ~/.bashrc
 
 ```
@@ -121,8 +129,8 @@ source ~/.bashrc
 Download the specialized compilation plugins that allow `protoc` to auto-generate structural Go code from your protocol buffers:
 
 ```bash
-go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+sudo go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+sudo go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 ```
 
