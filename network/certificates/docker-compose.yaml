@@ -1,6 +1,7 @@
 networks:
   glyph_network:
     name: glyph_network
+    driver: bridge
 
 services:
   orderer0.glyphchain.local:
@@ -17,23 +18,35 @@ services:
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/fabric/tls/orderer0.key.pem
       - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/fabric/tls/orderer0.crt
-      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric/tls/intermediate-chain.crt]
+      - ORDERER_GENERAL_TLS_ROOTCAS=/etc/hyperledger/fabric/tls/intermediate-chain.crt
       - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/etc/hyperledger/fabric/tls/orderer0.key.pem
       - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/etc/hyperledger/fabric/tls/orderer0.crt
-      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/etc/hyperledger/fabric/tls/intermediate-chain.crt]
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=/etc/hyperledger/fabric/tls/intermediate-chain.crt
       # Channel Configuration
       - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      # Admin TLS Configurations
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:9443
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/etc/hyperledger/fabric/tls/orderer0.key.pem
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/etc/hyperledger/fabric/tls/orderer0.crt
+      - ORDERER_ADMIN_TLS_ROOTCAS=/etc/hyperledger/fabric/tls/intermediate-chain.crt
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=/etc/hyperledger/fabric/tls/intermediate-chain.crt
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
     volumes:
       # Root-relative local paths mapped to absolute container internal paths
       - ./components/orderer0/msp:/etc/hyperledger/fabric/msp
+      - ./components/orderer0/msp/admincerts/admin.crt:/etc/hyperledger/fabric/tls/admin.crt
       - ./components/orderer0/msp/signcerts/orderer0.crt:/etc/hyperledger/fabric/tls/orderer0.crt
       - ./components/orderer0/msp/keystore/b2b324d37fa0cd948145e354e3cd86e66668e29f_sk:/etc/hyperledger/fabric/tls/orderer0.key.pem
       - ./components/orderer0/msp/cacerts/intermediate-chain.crt:/etc/hyperledger/fabric/tls/intermediate-chain.crt
       - ./components/orderer0/genesis.block:/etc/hyperledger/fabric/genesisblock
+      
+      # 🚀 MOUNTING YOUR EXACT HOST OSNADMIN TO INTERNAL STORAGE
+      - ~/go/src/github.com/hyperledger/fabric-samples/bin/osnadmin:/usr/local/bin/osnadmin_host
     ports:
       - 7050:7050
+      - 9443:9443
     networks:
       - glyph_network
 
@@ -62,6 +75,7 @@ services:
       - /var/run/:/host/var/run/
       # Root-relative local paths mapped to absolute container internal paths
       - ./components/peer0/msp:/etc/hyperledger/fabric/msp
+      - ./components/peer0/msp/admincerts/admin.crt:/etc/hyperledger/fabric/tls/admin.crt
       - ./components/peer0/msp/signcerts/peer0.crt:/etc/hyperledger/fabric/tls/peer0.crt
       - ./components/peer0/msp/keystore/0286f7287fdd5219eaeef3e2859cdb35677cf351_sk:/etc/hyperledger/fabric/tls/peer0.key.pem
       - ./components/peer0/msp/cacerts/intermediate-chain.crt:/etc/hyperledger/fabric/tls/intermediate-chain.crt
