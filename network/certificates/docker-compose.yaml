@@ -38,7 +38,7 @@ services:
       - ./components/orderer0/msp:/etc/hyperledger/fabric/msp
       - ./components/orderer0/msp/admincerts/admin.crt:/etc/hyperledger/fabric/tls/admin.crt
       - ./components/orderer0/msp/signcerts/orderer0.crt:/etc/hyperledger/fabric/tls/orderer0.crt
-      - ./components/orderer0/msp/keystore/b2b324d37fa0cd948145e354e3cd86e66668e29f_sk:/etc/hyperledger/fabric/tls/orderer0.key.pem
+      - ./components/orderer0/msp/keystore/orderer0.key.pem:/etc/hyperledger/fabric/tls/orderer0.key.pem
       - ./components/orderer0/msp/cacerts/intermediate-chain.crt:/etc/hyperledger/fabric/tls/intermediate-chain.crt
       - ./components/orderer0/genesis.block:/etc/hyperledger/fabric/genesisblock
       
@@ -77,7 +77,7 @@ services:
       - ./components/peer0/msp:/etc/hyperledger/fabric/msp
       - ./components/peer0/msp/admincerts/admin.crt:/etc/hyperledger/fabric/tls/admin.crt
       - ./components/peer0/msp/signcerts/peer0.crt:/etc/hyperledger/fabric/tls/peer0.crt
-      - ./components/peer0/msp/keystore/0286f7287fdd5219eaeef3e2859cdb35677cf351_sk:/etc/hyperledger/fabric/tls/peer0.key.pem
+      - ./components/peer0/msp/keystore/peer0.key.pem:/etc/hyperledger/fabric/tls/peer0.key.pem
       - ./components/peer0/msp/cacerts/intermediate-chain.crt:/etc/hyperledger/fabric/tls/intermediate-chain.crt
     ports:
       - 7051:7051
