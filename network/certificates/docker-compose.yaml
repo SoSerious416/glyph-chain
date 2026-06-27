@@ -81,35 +81,35 @@ services:
     networks:
       - glyph_network
 
-  # 🚀 THE ADMINISTRATIVE CONTROL CENTER CONTAINER
+  # THE ADMINISTRATIVE CONTROL CENTER CONTAINER
   cli:
     image: hyperledger/fabric-tools:2.4
+    container_name: cli
     tty: true
     stdin_open: true
     environment:
       - GOPATH=/opt/gopath
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - FABRIC_LOGGING_SPEC=INFO
-      # administrative routing configurations targeting peer0
+      
+      # Target peer0 node
       - CORE_PEER_ID=cli
       - CORE_PEER_ADDRESS=peer0.glyphchain.local:7051
       - CORE_PEER_LOCALMSPID=GlyphOrgMSP
       - CORE_PEER_TLS_ENABLED=true
-      # Map client administrative identity context natively 
-      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peer0.crt
-      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peer0.key.pem
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/intermediate-chain.crt
-      # Path pointing to default internal config templates inside image
+      
+      # 🚀 THE CRITICAL FIX: Set the configuration path to the container's native templates
       - FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      
+      # 🚀 IDENTITY SETTINGS: Point directly to peer0's mounted administrative MSP structure
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp/signcerts/peer0.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp/keystore/peer0.key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp/cacerts/intermediate-chain.crt
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
       - /var/run/:/host/var/run/
-      # Mount host directory straight to internal runtime workspace
       - ./:/opt/gopath/src/github.com/hyperledger/fabric/peer/
-      # Mount crypto targets so internal context matches authority chains
-      - ./components/peer0/msp/signcerts/peer0.crt:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peer0.crt
-      - ./components/peer0/msp/keystore/peer0.key.pem:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peer0.key.pem
-      - ./components/peer0/msp/cacerts/intermediate-chain.crt:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/intermediate-chain.crt
     networks:
       - glyph_network

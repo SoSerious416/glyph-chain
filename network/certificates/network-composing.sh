@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-# 🚀 THE FIX: This recursively follows symlinks to get the REAL project folder path
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
   SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
@@ -34,11 +33,11 @@ elif [ "$COMMAND" == "clean" ]; then
       -outputBlock "./components/orderer0/genesis.block" \
       -channelID glyphchannel
       
-    echo "⚡ Booting clean containers..."
+    echo "Booting clean containers..."
     docker compose up -d
     sleep 5
     
-    echo "🔗 Creating and joining channel via admin CLI..."
+    echo " Creating and joining channel via admin CLI..."
     # Join the Orderer via host osnadmin
     ~/go/src/github.com/hyperledger/fabric-samples/bin/osnadmin channel join \
       --channelID glyphchannel \
@@ -48,12 +47,13 @@ elif [ "$COMMAND" == "clean" ]; then
       --client-cert "./components/admin/admin.crt" \
       --client-key "./components/admin/admin.key.pem"
 
-    # Join Peer0 inside the new CLI container natively
-    docker exec -it cli peer channel join \
+    # Join Peer0 to the channel using the container's standard configuration path
+    docker exec cli peer channel join \
       -b ./components/orderer0/genesis.block \
-      --cafile ./components/orderer0/msp/cacerts/intermediate-chain.crt
+      --tls \
+      --cafile ./components/peer0/msp/cacerts/intermediate-chain.crt
       
-    echo "✅ Glyph Chain is fully initialized and ready!"
+    echo "Glyph Chain is fully initialized and ready!"
 else
     echo "Usage: network [up | down | clean]"
 fi
