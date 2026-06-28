@@ -102,10 +102,10 @@ services:
       - FABRIC_CFG_PATH=/etc/hyperledger/fabric
       
       # 🚀 IDENTITY SETTINGS: Point directly to peer0's mounted administrative MSP structure
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/admin/msp
       - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp/signcerts/peer0.crt
       - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp/keystore/peer0.key.pem
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp/cacerts/intermediate-chain.crt
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/components/peer0/msp/cacerts/intermediate-chain.crt  
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
