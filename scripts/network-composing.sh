@@ -10,7 +10,8 @@ done
 SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
 
 # Calculate the actual root project directory (one level up from scripts/)
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+# Hard anchor to the exact directory where configtx.yaml and docker-compose.yaml live
+PROJECT_DIR="/home/administrator/GLYPH Chain Orchestrator/network/certificates"
 
 # Instantly change your terminal context to the actual root project folder
 cd "$PROJECT_DIR"
