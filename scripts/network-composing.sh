@@ -1,46 +1,34 @@
 #!/bin/bash
 set -e
 
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do
-  SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$SCRIPT_DIR/$SOURCE"
-done
-SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
-
-# Calculate the actual root project directory (one level up from scripts/)
-# Hard anchor to the exact directory where configtx.yaml and docker-compose.yaml live
+# Define absolute paths to prevent any directory context issues
 PROJECT_DIR="/home/administrator/GLYPH Chain Orchestrator/network/certificates"
-
-# Instantly change your terminal context to the actual root project folder
-cd "$PROJECT_DIR"
+COMPOSE_FILE="$PROJECT_DIR/docker-compose.yaml"
 
 COMMAND=$1
 
 if [ "$COMMAND" == "up" ]; then
     echo "Starting Glyph Chain network..."
-    docker compose up -d
+    docker compose -f "$COMPOSE_FILE" up -d
     
 elif [ "$COMMAND" == "down" ]; then
     echo "Stopping containers..."
-    docker compose down
+    docker compose -f "$COMPOSE_FILE" down
     
 elif [ "$COMMAND" == "clean" ]; then
     echo "Obliterating old network state and database volumes..."
-    docker compose down --volumes --remove-orphans
+    docker compose -f "$COMPOSE_FILE" down --volumes --remove-orphans
     docker volume prune -f
     
     echo "Re-baking fresh genesis block..."
-    # Configtxgen needs to look at the project directory where configtx.yaml lives
     export FABRIC_CFG_PATH="$PROJECT_DIR"
     
     ~/go/src/github.com/hyperledger/fabric-samples/bin/configtxgen -profile TwoOrgsChannel \
-      -outputBlock "./components/orderer0/genesis.block" \
+      -outputBlock "$PROJECT_DIR/components/orderer0/genesis.block" \
       -channelID glyphchannel
       
     echo "Booting clean containers..."
-    docker compose up -d
+    docker compose -f "$COMPOSE_FILE" up -d
     sleep 5
     
     echo "Creating and joining channel via admin CLI..."
